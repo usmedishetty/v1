@@ -47,4 +47,12 @@ pytest-timeout>=2.2.0
 
 # --- Document & PDF Parsing ---
 pdfplumber>=0.11.0
+pypdf>=3.0.0
+reportlab>=4.0.0
+
+# --- Hardware Acceleration & ONNX Inference ---
+onnxruntime>=1.16.0
+onnx>=1.15.0
+skl2onnx>=1.16.0
+
 

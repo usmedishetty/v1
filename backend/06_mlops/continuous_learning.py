@@ -30,9 +30,14 @@ import joblib
 from sklearn.metrics import roc_auc_score, mean_absolute_error
 from sklearn.model_selection import train_test_split
 
-import onnxruntime as ort
-from skl2onnx import to_onnx
-from skl2onnx.common.data_types import FloatTensorType
+try:
+    import onnxruntime as ort
+    from skl2onnx import to_onnx
+    from skl2onnx.common.data_types import FloatTensorType
+except ImportError:
+    ort = None
+    to_onnx = None
+    FloatTensorType = None
 
 _CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 _BACKEND_DIR = os.path.dirname(_CURR_DIR)
@@ -97,6 +102,8 @@ def detect_npu_provider() -> Tuple[str, List[str]]:
     Auto-detect the highest priority NPU/hardware acceleration provider using onnxruntime.
     Tests in exact order: QNN -> OpenVINO -> VitisAI -> DirectML -> CUDA -> CPU.
     """
+    if ort is None:
+        return "CPUExecutionProvider", ["CPUExecutionProvider"]
     available = ort.get_available_providers()
     logger.info(f"System onnxruntime available providers: {available}")
     
@@ -137,6 +144,9 @@ class NPUEngine:
             self.load_session(model_onnx_path)
 
     def load_session(self, onnx_path: str):
+        if ort is None:
+            self.session = None
+            return
         try:
             self.model_onnx_path = onnx_path
             self.session = ort.InferenceSession(str(onnx_path), providers=[self.provider, "CPUExecutionProvider"])
@@ -150,6 +160,9 @@ class NPUEngine:
         """
         Exports the tree ensemble estimator to ONNX for NPU acceleration.
         """
+        if to_onnx is None or FloatTensorType is None:
+            logger.warning("skl2onnx or FloatTensorType not available; skipping ONNX export.")
+            return ""
         output_path = str(output_path)
         try:
             target_estimator = None

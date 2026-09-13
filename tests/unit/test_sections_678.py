@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import json
 import joblib
@@ -8,9 +9,17 @@ import pandas as pd
 from scipy.stats import spearmanr
 import shap
 
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+for _p in [_ROOT, os.path.join(_ROOT, "scripts")]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 from hybrid_model import HybridRiskPredictor
 from explainer import DualParadigmExplainer
-from extract_shap import extract_xgb_model
+try:
+    from extract_shap import extract_xgb_model
+except ImportError:
+    from scripts.extract_shap import extract_xgb_model
 
 def resolve_model_path(filename):
     """Checks for model weights in models/ and root directory."""

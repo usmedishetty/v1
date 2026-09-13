@@ -28,7 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install torch --index-url https://download.pytorch.org/whl/cpu
         pip install -r requirements.txt
-        pip install pytest httpx pymysql slowapi
+        pip install pytest httpx pymysql slowapi reportlab onnxruntime onnx skl2onnx pypdf
 
     - name: Run Full Regression Test Suite
       run: |
