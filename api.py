@@ -11,7 +11,11 @@ for _p in [_ROOT, _BACKEND]:
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from backend.api import app
+from backend.api import app, load_artifacts
+import backend.api as _backend_api
+for _attr in dir(_backend_api):
+    if not _attr.startswith("__"):
+        globals()[_attr] = getattr(_backend_api, _attr)
 
 if __name__ == "__main__":
     import uvicorn

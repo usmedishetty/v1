@@ -278,7 +278,10 @@ def test_api_delay_prevention_integration():
     recommendations, buffer status, and dynamic ROI surface through /predict.
     """
     from fastapi.testclient import TestClient
-    from api import app, load_artifacts
+    try:
+        from api import app, load_artifacts
+    except ImportError:
+        from backend.api import app, load_artifacts
 
     load_artifacts()
     client = TestClient(app)
